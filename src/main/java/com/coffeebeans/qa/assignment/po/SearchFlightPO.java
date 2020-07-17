@@ -27,11 +27,12 @@ public class SearchFlightPO {
 	 * @param driver
 	 */
 	public SearchFlightPO(WebDriver driver) {
+		// init the web elements in this page defined with annotations with ajax response timeout of 10seconds.
 		PageFactory.initElements(new AjaxElementLocatorFactory(driver, 10), this);
 	}
 
 	// web elements declarations
-	
+
 	@FindBy(linkText = "Flights")
 	WebElement flightsLink;
 
@@ -53,14 +54,18 @@ public class SearchFlightPO {
 	@FindBy(id = "SearchBtn")
 	WebElement searchBtn;
 
+	// suggestions which are returned from ajax call after entering text in "from" field
+	// For Ex: "New Delhi, IN - Indira Gandhi Airport (DEL)" is the suggestion got after entering "Delhi"
 	@FindBy(xpath = "//ul[@id='ui-id-1']/descendant::li[@class='list']")
 	List<WebElement> fromSuggestions;
 
+	// suggestions which are returned from ajax call after entering text in "to" field
+	// For Ex: "Mumbai, IN - Chatrapati Shivaji Airport (BOM)" is the suggestion got after entering "Mumbai"
 	@FindBy(xpath = "//ul[@id='ui-id-2']/descendant::li[@class='list']")
 	List<WebElement> toSuggestions;
 
 	// public methods to be invoked from test class
-	
+
 	public void clickOnFlights() {
 		flightsLink.click();
 	}
@@ -70,6 +75,9 @@ public class SearchFlightPO {
 	}
 
 	public void setFrom(String text) {
+		// enter the text and loop through the suggestions
+		// select the suggestion which has the text by clicking on it
+		// close the suggestion box by sending escape Key
 		fromText.sendKeys(text);
 		for (WebElement webElement : fromSuggestions) {
 			if(webElement.getText().contains(text)) {
@@ -81,6 +89,9 @@ public class SearchFlightPO {
 	}
 
 	public void setTo(String text) {
+		// enter the text and loop through the suggestions
+		// select the suggestion which has the text by clicking on it
+		// close the suggestion box by sending escape Key
 		toText.sendKeys(text);
 		for (WebElement webElement : toSuggestions) {
 			System.out.println("To:" + webElement.getText());
@@ -92,17 +103,23 @@ public class SearchFlightPO {
 	}
 
 	public void setDepartDate(Date dpDate) {
+		// get the formatted string from date object and enter in "Depart On" field
+		// close the suggestion box by sending escape Key
 		dapartDate.sendKeys(df.format(dpDate));
 		dapartDate.sendKeys(Keys.ESCAPE);
 	}
 
 	public void setReturnDate(Date rtDate) {
+		// clear the pre-populated current date in "Return on" field 
+		// get the formatted string from date object and enter in "Return On" field
+		// close the suggestion box by sending escape Key
 		returnDate.sendKeys(Keys.BACK_SPACE);
 		returnDate.sendKeys(df.format(rtDate));
 		returnDate.sendKeys(Keys.ESCAPE);
 	}
 
 	public void clickOnSearchBtn() {
+		// click on "Search flights" button
 		searchBtn.click();
 	}
 }

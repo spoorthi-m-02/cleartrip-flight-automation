@@ -7,13 +7,19 @@
 	<!-- <test name="FirefoxTest">
 		<parameter name="browser" value="FIREFOX" />
 		<classes>
-			<class name="ClerTripFlightTest" />
+			<class name="com.coffeebeans.qa.assignment.tests.ClearTripFlightTest" />
 		</classes>
 	</test> -->
 	<test name="ChromeTest">
 		<parameter name="browser" value="CHROME" />
 		<classes>
-			<class name="ClerTripFlightTest" />
+			<class name="com.coffeebeans.qa.assignment.tests.ClearTripFlightTest" />
 		</classes>
 	</test>
+	<!-- <test name="HtmlUnitTest">
+		<parameter name="browser" value="HTMLUNIT" />
+		<classes>
+			<class name="ClerTripFlightTest" />
+		</classes>
+	</test> -->
 </suite>

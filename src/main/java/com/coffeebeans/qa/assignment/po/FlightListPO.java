@@ -18,7 +18,6 @@ import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
  * Page Object for Flight search results in CLeartrip website
  */
 public class FlightListPO {
-	WebDriver driver;
 	Actions actions;
 
 	/**
@@ -26,8 +25,9 @@ public class FlightListPO {
 	 * @param driver
 	 */
 	public FlightListPO(WebDriver driver) {
-		this.driver = driver;
+		// create an actions element to perform keyboard and mouse actions
 		this.actions =  new Actions(driver);
+		// init the web elements in this page defined with annotations with ajax response timeout of 10seconds.
 		PageFactory.initElements(new AjaxElementLocatorFactory(driver, 10), this);
 	}
 
@@ -36,6 +36,7 @@ public class FlightListPO {
 	 * INPORTANT
 	 * Page layout changes (basically switches between two layouts)
 	 * All the elements below are designed work with both layouts
+	 * The first find by annotation corresponds to element in the first view
 	 */
 
 	@FindAll(value = {
@@ -44,6 +45,7 @@ public class FlightListPO {
 	})
 	List<WebElement> nonStopFilter;
 
+	// This element xpath is same in both the layouts
 	@FindBy(xpath = "//*[contains(text(), '1 stop')]")
 	WebElement oneStopFilter;
 
@@ -80,52 +82,70 @@ public class FlightListPO {
 	// public methods to be invoked from Test class
 
 	public List<Integer> listOnwardFlightPrice() {
+		// Extracts the integer value of price from all the onward flights 
 		return extractPriceFromFlightList(onwardFlighList);
 	}
 
 	public List<Integer> listReturnFlightPrice() {
+		// Extracts the integer value of price from all the return flights
 		return extractPriceFromFlightList(returnFlighList);
 	}
 
 	public void applyNonStopFilter() {
+		// apply the "0 stop" filter 
 		nonStopFilter.get(0).click();
 	}
 
 	public void applyOneStopFilter() {
+		// apply the "1 stop" filter 
 		oneStopFilter.click();
 	}
 
 	public boolean selectOnwardFlightByIndex(int index) {
+		// select from the list of onward flights by index
+		// basically click on the element in the specified index
 		return selectFlight(onwardFlighList, index);
 	}
 
 	public boolean selectReturnFlightByIndex(int index) {
+		// select from the list of return flights by index
+		// basically click on the element in the specified index
 		return selectFlight(returnFlighList, index);
 	}
 
 	public Integer getOnwardFlightPrice() {
+		// get the integer value of selected onward flight
+		// note that this is very similar operation as that of extracting price from list
+		// except that the xpath varies a little - one less div tag in the Xpath
 		return extractPriceFrmWebElement(selectedOnwardFlight.get(0), true);
 	}
 
 	public Integer getReturnFlightPrice() {
+		// get the integer value of selected return flight
+		// note that this is very similar operation as that of extracting price from list
+		// except that the xpath varies a little - one less div tag in the Xpath
 		return extractPriceFrmWebElement(selectedReturnFlight.get(0), true);
 	}
 
 	public Integer getTotalPriceOnPage() {
+		// get the integer value of total price shown on the screen
 		return extractPriceFromString(totalPriceField.get(0).getText());
 	}
+
+	// private methods used in the class
+
 
 	private Integer extractPriceFromString(String str) {
 		Integer total = 0;
 		try {
+			// get rid of non-number characters like comma(,) and rupee symbol
 			return Integer.valueOf(str.replaceAll("[^0-9]", ""));
 		} catch (Exception e) {}
 		return total;
 	}
 
-	// private methods used in the class
-	
 	private boolean selectFlight(List<WebElement> flights, int index) {
+		// make sure the element exists in the specified index
 		if(flights.size() > index) {
 			WebElement flight = flights.get(index);
 			actions.moveToElement(flight).click().perform();
@@ -135,14 +155,19 @@ public class FlightListPO {
 	}
 
 	private List<Integer> extractPriceFromFlightList(List<WebElement> flighList) {
+		// extract the price from each element and return the integer list
+		// this is called from both onward and return flights
 		List<Integer> result = new ArrayList<>();
 		for (WebElement webElement : flighList) {
+			// extract the price from web element with relative xpath
 			result.add(extractPriceFrmWebElement(webElement, false));
 		}
 		return result;
 	}
 
 	private Integer extractPriceFrmWebElement(WebElement webElement, boolean selectedPrice) {
+		// this method is called to get integer value of price from both list of elements and selected element
+		// the xpath varies slightly for selected element and list of elements which is differentiated by boolean flag
 		String price;
 		try {
 			if(selectedPrice) {
@@ -152,6 +177,9 @@ public class FlightListPO {
 			}
 			return extractPriceFromString(price);
 		} catch (Exception e) {}
+		
+		
+		// the below section works for the other UI layout 
 		try {
 			if(selectedPrice) {
 				price = webElement.getAttribute("data-price");
